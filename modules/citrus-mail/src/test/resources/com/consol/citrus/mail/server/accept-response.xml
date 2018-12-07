@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<accept-response xmlns="http://www.citrusframework.org/schema/mail/message">
+  <accept>true</accept>
+</accept-response>

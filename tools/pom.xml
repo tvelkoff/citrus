@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>citrus</artifactId>
+    <groupId>com.consol.citrus</groupId>
+    <version>2.7.7-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>citrus-tools</artifactId>
+  <name>citrus-tools</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>test-generator</module>
+    <module>docs-generator</module>
+    <module>maven</module>
+    <module>remote</module>
+    <module>archetypes</module>
+  </modules>
+
+  <properties>
+    <swagger.version>1.0.32</swagger.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-parser</artifactId>
+        <version>${swagger.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.squareup</groupId>
+        <artifactId>javapoet</artifactId>
+        <version>1.10.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.xmlbeans</groupId>
+        <artifactId>xmlbeans</artifactId>
+        <version>2.4.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlbeans</groupId>
+        <artifactId>xmlbeans-xpath</artifactId>
+        <version>2.4.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
+
