@@ -58,8 +58,7 @@ import java.util.stream.Stream;
  * @author Christoph Deppisch
  * @since 2.3
  */
-public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends ReceiveMessageBuilder<A, ?>> extends AbstractTestActionBuilder<DelegatingTestAction<TestAction>> {
-//	public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends ReceiveMessageBuilder<A, T>> extends AbstractTestActionBuilder<DelegatingTestAction<TestAction>> {
+public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends ReceiveMessageBuilder> extends AbstractTestActionBuilder<DelegatingTestAction<TestAction>> {
 
     /** Self reference for generics support */
     private final T self;
@@ -91,14 +90,14 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @param action
      */
     public ReceiveMessageBuilder(A action) {
-        this((DelegatingTestAction<TestAction>)new DelegatingTestAction(action));
+        this(new DelegatingTestAction(action));
     }
 
     /**
      * Default constructor.
      */
     public ReceiveMessageBuilder() {
-        this((A)new ReceiveMessageAction());
+        this((A) new ReceiveMessageAction());
     }
 
     /**
@@ -107,7 +106,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public ReceiveMessageBuilder(DelegatingTestAction<TestAction> action) {
         super(action);
-        this.self = (T)this;
+        this.self = (T) this;
     }
 
     /**
@@ -115,9 +114,9 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @param messageEndpoint
      * @return
      */
-    public T endpoint(Endpoint messageEndpoint) {
+    public ReceiveMessageBuilder endpoint(Endpoint messageEndpoint) {
         getAction().setEndpoint(messageEndpoint);
-        return this.self;
+        return this;
     }
 
     /**
@@ -125,9 +124,9 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @param messageEndpointUri
      * @return
      */
-    public T endpoint(String messageEndpointUri) {
+    public ReceiveMessageBuilder endpoint(String messageEndpointUri) {
         getAction().setEndpointUri(messageEndpointUri);
-        return this.self;
+        return this;
     }
 
     /**
@@ -137,7 +136,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T timeout(long receiveTimeout) {
         getAction().setReceiveTimeout(receiveTimeout);
-        return this.self;
+        return self;
     }
     
     /**
@@ -149,7 +148,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
         StaticMessageContentBuilder staticMessageContentBuilder = StaticMessageContentBuilder.withMessage(controlMessage);
         staticMessageContentBuilder.setMessageHeaders(getMessageContentBuilder().getMessageHeaders());
         getAction().setMessageBuilder(staticMessageContentBuilder);
-        return this.self;
+        return self;
     }
 
     /**
@@ -176,7 +175,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T name(String name) {
         getMessageContentBuilder().setMessageName(name);
-        return this.self;
+        return self;
     }
     
     /**
@@ -186,7 +185,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T payload(String payload) {
         setPayload(payload);
-        return this.self;
+        return self;
     }
     
     /**
@@ -211,7 +210,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             throw new CitrusRuntimeException("Failed to read payload resource", e);
         }
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -234,7 +233,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
 
         setPayload(result.toString());
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -251,7 +250,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             throw new CitrusRuntimeException("Failed to map object graph for message payload", e);
         }
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -307,7 +306,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T header(String name, Object value) {
         getMessageContentBuilder().getMessageHeaders().put(name, value);
-        return this.self;
+        return self;
     }
 
     /**
@@ -317,7 +316,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T headers(Map<String, Object> headers) {
         getMessageContentBuilder().getMessageHeaders().putAll(headers);
-        return this.self;
+        return self;
     }
     
     /**
@@ -328,7 +327,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T header(String data) {
         getMessageContentBuilder().getHeaderData().add(data);
-        return this.self;
+        return self;
     }
 
     /**
@@ -436,7 +435,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             throw new CitrusRuntimeException("Failed to read header resource", e);
         }
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -446,7 +445,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T headerNameIgnoreCase(boolean value) {
         headerValidationContext.setHeaderNameIgnoreCase(value);
-        return this.self;
+        return self;
     }
     
     /**
@@ -457,7 +456,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T validateScript(String validationScript) {
         getScriptValidationContext().setValidationScript(validationScript);
 
-        return this.self;
+        return self;
     }
     
     /**
@@ -482,7 +481,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             throw new CitrusRuntimeException("Failed to read script resource file", e);
         }
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -492,7 +491,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T validateScriptResource(String fileResourcePath) {
         getScriptValidationContext().setValidationScriptResourcePath(fileResourcePath);
-        return this.self;
+        return self;
     }
     
     /**
@@ -503,7 +502,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T validateScriptType(String type) {
         getScriptValidationContext().setScriptType(type);
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -513,7 +512,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T messageType(MessageType messageType) {
         messageType(messageType.name());
-        return this.self;
+        return self;
     }
     
     /**
@@ -531,7 +530,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().getValidationContexts().add(jsonMessageValidationContext);
         }
 
-        return this.self;
+        return self;
     }
     
     /**
@@ -542,7 +541,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T schemaValidation(boolean enabled) {
         xmlMessageValidationContext.setSchemaValidation(enabled);
         jsonMessageValidationContext.setSchemaValidation(enabled);
-        return this.self;
+        return self;
     }
 
     /**
@@ -553,7 +552,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T validateNamespace(String prefix, String namespaceUri) {
         xmlMessageValidationContext.getControlNamespaces().put(prefix, namespaceUri);
-        return this.self;
+        return self;
     }
     
     /**
@@ -569,7 +568,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getXPathValidationContext().getXpathExpressions().put(path, controlValue);
         }
 
-        return this.self;
+        return self;
     }
     
     /**
@@ -584,7 +583,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
         } else if (messageType.equalsIgnoreCase(MessageType.JSON.name())) {
             jsonMessageValidationContext.getIgnoreExpressions().add(path);
         }
-        return this.self;
+        return self;
     }
     
     /**
@@ -595,7 +594,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T xpath(String xPathExpression, Object controlValue) {
         validate(xPathExpression, controlValue);
-        return this.self;
+        return self;
     }
 
     /**
@@ -606,7 +605,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T jsonPath(String jsonPathExpression, Object controlValue) {
         validate(jsonPathExpression, controlValue);
-        return this.self;
+        return self;
     }
     
     /**
@@ -616,7 +615,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T xsd(String schemaName) {
         xmlMessageValidationContext.setSchema(schemaName);
-        return this.self;
+        return self;
     }
 
     /**
@@ -625,7 +624,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T jsonSchema(String schemaName) {
         jsonMessageValidationContext.setSchema(schemaName);
-        return this.self;
+        return self;
     }
     
     /**
@@ -635,7 +634,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T xsdSchemaRepository(String schemaRepository) {
         xmlMessageValidationContext.setSchemaRepository(schemaRepository);
-        return this.self;
+        return self;
     }
 
     /**
@@ -645,7 +644,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T jsonSchemaRepository(String schemaRepository) {
         jsonMessageValidationContext.setSchemaRepository(schemaRepository);
-        return this.self;
+        return self;
     }
     
     /**
@@ -657,7 +656,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T namespace(String prefix, String namespaceUri) {
         getXpathVariableExtractor().getNamespaces().put(prefix, namespaceUri);
         xmlMessageValidationContext.getNamespaces().put(prefix, namespaceUri);
-        return this.self;
+        return self;
     }
     
     /**
@@ -669,7 +668,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
         getXpathVariableExtractor().getNamespaces().putAll(namespaceMappings);
 
         xmlMessageValidationContext.getNamespaces().putAll(namespaceMappings);
-        return this.self;
+        return self;
     }
     
     /**
@@ -680,7 +679,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T selector(String messageSelector) {
         getAction().setMessageSelector(messageSelector);
 
-        return this.self;
+        return self;
     }
     
     /**
@@ -691,7 +690,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T selector(Map<String, Object> messageSelector) {
         getAction().setMessageSelectorMap(messageSelector);
 
-        return this.self;
+        return self;
     }
     
     /**
@@ -701,7 +700,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T validator(MessageValidator<? extends ValidationContext> ... validators) {
         Stream.of(validators).forEach(getAction()::addValidator);
-        return this.self;
+        return self;
     }
     
     /**
@@ -717,7 +716,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().addValidator(applicationContext.getBean(validatorName, MessageValidator.class));
         }
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -727,7 +726,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T headerValidator(HeaderValidator... validators) {
         Stream.of(validators).forEach(headerValidationContext::addHeaderValidator);
-        return this.self;
+        return self;
     }
 
     /**
@@ -735,7 +734,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @param validatorNames
      * @return
      */
-//    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public T headerValidator(String ... validatorNames) {
         Assert.notNull(applicationContext, "Citrus application context is not initialized!");
 
@@ -743,7 +742,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             headerValidationContext.addHeaderValidator(applicationContext.getBean(validatorName, HeaderValidator.class));
         }
 
-        return this.self;
+        return self;
     }
 
     /**
@@ -751,9 +750,9 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @param dictionary
      * @return
      */
-    public T dictionary(DataDictionary<?> dictionary) {
+    public T dictionary(DataDictionary dictionary) {
         getAction().setDataDictionary(dictionary);
-        return this.self;
+        return self;
     }
 
     /**
@@ -761,13 +760,13 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @param dictionaryName
      * @return
      */
-//    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public T dictionary(String dictionaryName) {
         Assert.notNull(applicationContext, "Citrus application context is not initialized!");
-        DataDictionary<?> dictionary = applicationContext.getBean(dictionaryName, DataDictionary.class);
+        DataDictionary dictionary = applicationContext.getBean(dictionaryName, DataDictionary.class);
 
         getAction().setDataDictionary(dictionary);
-        return this.self;
+        return self;
     }
     
     /**
@@ -784,7 +783,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
         }
         
         headerExtractor.getHeaderMappings().put(headerName, variable);
-        return this.self;
+        return self;
     }
     
     /**
@@ -799,7 +798,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
         } else {
             getXpathVariableExtractor().getXpathExpressions().put(path, variable);
         }
-        return this.self;
+        return self;
     }
     
     /**
@@ -814,7 +813,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
         }
 
         getAction().setValidationCallback(callback);
-        return this.self;
+        return self;
     }
 
     /**
@@ -823,7 +822,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      */
     public T withApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        return this.self;
+        return self;
     }
 
     /**
@@ -851,7 +850,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().getVariableExtractors().add(xpathExtractor);
         }
 
-        return this.xpathExtractor;
+        return xpathExtractor;
     }
 
     /**
@@ -864,7 +863,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().getVariableExtractors().add(jsonPathExtractor);
         }
 
-        return this.jsonPathExtractor;
+        return jsonPathExtractor;
     }
 
     /**
@@ -888,7 +887,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().getValidationContexts().remove(xmlMessageValidationContext);
             getAction().getValidationContexts().add(xPathContext);
 
-            this.xmlMessageValidationContext = xPathContext;
+            xmlMessageValidationContext = xPathContext;
             return xPathContext;
         }
     }
@@ -903,7 +902,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().getValidationContexts().add(scriptValidationContext);
         }
 
-        return this.scriptValidationContext;
+        return scriptValidationContext;
     }
 
     /**
@@ -916,7 +915,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
             getAction().getValidationContexts().add(jsonPathValidationContext);
         }
 
-        return this.jsonPathValidationContext;
+        return jsonPathValidationContext;
     }
 
     /**
@@ -924,7 +923,7 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
      * @return
      */
     protected ReceiveMessageAction getAction() {
-        return (ReceiveMessageAction) this.action.getDelegate();
+        return (ReceiveMessageAction) action.getDelegate();
     }
 
     /**

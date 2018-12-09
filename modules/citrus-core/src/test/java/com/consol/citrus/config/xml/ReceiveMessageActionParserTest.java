@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
  */
 public class ReceiveMessageActionParserTest extends AbstractActionParserTest<ReceiveMessageAction> {
 
-    @Test(enabled=false)
+    @Test
     public void testReceiveMessageActionParser() {
         assertActionCount(18);
         assertActionClassAndName(ReceiveMessageAction.class, "receive");

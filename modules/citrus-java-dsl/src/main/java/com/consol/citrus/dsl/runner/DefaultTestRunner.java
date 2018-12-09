@@ -311,7 +311,7 @@ public class DefaultTestRunner implements TestRunner {
 
     @Override
     public ReceiveMessageAction receive(BuilderSupport<ReceiveMessageBuilder> configurer) {
-        ReceiveMessageBuilder<ReceiveMessageAction, ReceiveMessageBuilder<ReceiveMessageAction, ReceiveMessageBuilder<ReceiveMessageAction, ?>>> builder = new ReceiveMessageBuilder()
+        ReceiveMessageBuilder<ReceiveMessageAction, ReceiveMessageBuilder> builder = new ReceiveMessageBuilder()
                 .messageType(MessageType.XML)
                 .withApplicationContext(applicationContext);
         configurer.configure(builder);

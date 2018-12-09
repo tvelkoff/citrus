@@ -81,7 +81,7 @@ public abstract class AbstractTestActionBuilder<T extends TestAction> implements
     }
 
     @Override
-    public final AbstractTestActionBuilder<T> setName(String name) {
+    public final AbstractTestActionBuilder setName(String name) {
         action.setName(name);
         return this;
     }
@@ -103,7 +103,7 @@ public abstract class AbstractTestActionBuilder<T extends TestAction> implements
     }
 
     @Override
-    public final AbstractTestActionBuilder<T> setDescription(String description) {
+    public final AbstractTestActionBuilder setDescription(String description) {
         action.setDescription(description);
         return this;
     }

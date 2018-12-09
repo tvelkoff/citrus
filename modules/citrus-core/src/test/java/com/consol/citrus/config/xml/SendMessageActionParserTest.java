@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
  */
 public class SendMessageActionParserTest extends AbstractActionParserTest<SendMessageAction> {
 
-    @Test(enabled=false)
+    @Test
     public void testSendMessageActionParser() {
         assertActionCount(8);
         assertActionClassAndName(SendMessageAction.class, "send");
