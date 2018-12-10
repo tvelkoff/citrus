@@ -622,6 +622,26 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     }
     
     /**
+     * Adds message element validation.
+     * @param map Map of paths to control values
+     * @return
+     */
+    public T validateXpath(Map<String, Object> map) {
+        getXPathValidationContext().getXpathExpressions().putAll(map);
+        return self;
+    }
+    
+    /**
+     * Adds message element validation.
+     * @param map Map of paths to control values
+     * @return
+     */
+    public T validateJsonPath(Map<String, Object> map) {
+    	getJsonPathValidationContext().getJsonPathExpressions().putAll(map);
+        return self;
+    }
+    
+    /**
      * Adds ignore path expression for message element.
      * @param path
      * @return

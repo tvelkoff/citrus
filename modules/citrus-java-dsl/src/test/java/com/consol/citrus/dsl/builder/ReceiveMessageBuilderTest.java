@@ -551,6 +551,50 @@ public class ReceiveMessageBuilderTest {
 	}
 
 	@Test
+	public void validate_xmlMap() throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		String key1 = "//ResultCode";
+		String value1 = "Success";
+		String key2 = "//Foo";
+		String value2 = "Bar";
+		String key3 = "//Hello";
+		String value3 = "Goodbye";
+		map.put(key1, value1);
+		map.put(key2, value2);
+		map.put(key3, value3);
+		MessageType messageType = MessageType.XML;
+		this.builder = new ReceiveMessageBuilder();
+		this.builder.messageType(messageType);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.validateXpath(map);
+		assertTrue(copy == this.builder);
+		assertEquals("Success", ((XpathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "xmlMessageValidationContext")).getXpathExpressions().get("//ResultCode"));
+		assertEquals("Bar", ((XpathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "xmlMessageValidationContext")).getXpathExpressions().get("//Foo"));
+		assertEquals("Goodbye", ((XpathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "xmlMessageValidationContext")).getXpathExpressions().get("//Hello"));
+	}
+
+	@Test
+	public void validate_jsonMap() throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		String key1 = "$ResultCode";
+		String value1 = "Success";
+		String key2 = "$Foo";
+		String value2 = "Bar";
+		String key3 = "$Hello";
+		String value3 = "Goodbye";
+		map.put(key1, value1);
+		map.put(key2, value2);
+		map.put(key3, value3);
+		MessageType messageType = MessageType.XML;
+		this.builder = new ReceiveMessageBuilder();
+		this.builder.messageType(messageType);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.validateJsonPath(map);
+		assertTrue(copy == this.builder);
+		assertEquals("Success", ((JsonPathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "jsonPathValidationContext")).getJsonPathExpressions().get("$ResultCode"));
+		assertEquals("Bar", ((JsonPathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "jsonPathValidationContext")).getJsonPathExpressions().get("$Foo"));
+		assertEquals("Goodbye", ((JsonPathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "jsonPathValidationContext")).getJsonPathExpressions().get("$Hello"));
+	}
+
+	@Test
 	public void ignore_json() throws Exception {
 		String path = "$ResultCode";
 		MessageType messageType = MessageType.JSON;
