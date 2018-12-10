@@ -12,8 +12,11 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -31,14 +34,21 @@ import com.consol.citrus.dsl.actions.DelegatingTestAction;
 import com.consol.citrus.endpoint.Endpoint;
 import com.consol.citrus.message.Message;
 import com.consol.citrus.message.MessageType;
+import com.consol.citrus.validation.HeaderValidator;
+import com.consol.citrus.validation.MessageValidator;
 import com.consol.citrus.validation.builder.PayloadTemplateMessageBuilder;
+import com.consol.citrus.validation.callback.ValidationCallback;
 import com.consol.citrus.validation.context.HeaderValidationContext;
 import com.consol.citrus.validation.json.JsonMessageValidationContext;
 import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
+import com.consol.citrus.validation.json.JsonPathVariableExtractor;
 import com.consol.citrus.validation.script.ScriptValidationContext;
 import com.consol.citrus.validation.xml.XmlMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathPayloadVariableExtractor;
+import com.consol.citrus.variable.MessageHeaderVariableExtractor;
+import com.consol.citrus.variable.VariableExtractor;
+import com.consol.citrus.variable.dictionary.DataDictionary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -671,6 +681,155 @@ public class ReceiveMessageBuilderTest {
 		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.selector(selectors);
 		assertTrue(copy == this.builder);
 		assertEquals(selectors, this.builder.getAction().getMessageSelectorMap());
+	}
+	
+	@Test
+	public void validator_fromMessageValidators() throws Exception {
+		MessageValidator validator1 = mock(MessageValidator.class);
+		MessageValidator validator2 = mock(MessageValidator.class);
+		MessageValidator validator3 = mock(MessageValidator.class);
+		this.builder = new ReceiveMessageBuilder();
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.validator(validator1, validator2, validator3);
+		assertTrue(copy == this.builder);
+		assertEquals(3, this.builder.getAction().getValidators().size());
+	}
+
+	@Disabled
+	@Test
+	public void validator_fromNames() throws Exception {
+		MessageValidator validator1 = mock(MessageValidator.class);
+		MessageValidator validator2 = mock(MessageValidator.class);
+		MessageValidator validator3 = mock(MessageValidator.class);
+		String name1 = "validator1";
+		String name2 = "validator2";
+		String name3 = "validator3";
+		ApplicationContext mockApplicationContext = mock(ApplicationContext.class);
+		when(mockApplicationContext.getBean(name1, MessageValidator.class)).thenReturn(validator1);
+		when(mockApplicationContext.getBean(name2, MessageValidator.class)).thenReturn(validator2);
+		when(mockApplicationContext.getBean(name3, MessageValidator.class)).thenReturn(validator3);
+		this.builder = new ReceiveMessageBuilder();
+		ReflectionTestUtils.setField(this.builder, "applicationContext", mockApplicationContext);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.validator(name1, name2, name3);
+		assertTrue(copy == this.builder);
+		assertEquals(3, this.builder.getAction().getValidators().size());
+		ReflectionTestUtils.setField(this.builder, "applicationContext", null);
+	}
+
+	@Test
+	public void headerValidator_fromHeaderValidators() throws Exception {
+		HeaderValidator validator1 = mock(HeaderValidator.class);
+		HeaderValidator validator2 = mock(HeaderValidator.class);
+		HeaderValidator validator3 = mock(HeaderValidator.class);
+		this.builder = new ReceiveMessageBuilder();
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.headerValidator(validator1, validator2, validator3);
+		assertTrue(copy == this.builder);
+		assertEquals(3, ((HeaderValidationContext)ReflectionTestUtils.getField(this.builder, "headerValidationContext")).getValidators().size());
+	}
+
+	@Disabled
+	@Test
+	public void headerValidator_fromNames() throws Exception {
+		HeaderValidator validator1 = mock(HeaderValidator.class);
+		HeaderValidator validator2 = mock(HeaderValidator.class);
+		HeaderValidator validator3 = mock(HeaderValidator.class);
+		String name1 = "validator1";
+		String name2 = "validator2";
+		String name3 = "validator3";
+		ApplicationContext mockApplicationContext = mock(ApplicationContext.class);
+		when(mockApplicationContext.getBean(name1, HeaderValidator.class)).thenReturn(validator1);
+		when(mockApplicationContext.getBean(name2, HeaderValidator.class)).thenReturn(validator2);
+		when(mockApplicationContext.getBean(name3, HeaderValidator.class)).thenReturn(validator3);
+		this.builder = new ReceiveMessageBuilder();
+		ReflectionTestUtils.setField(this.builder, "applicationContext", mockApplicationContext);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.headerValidator(name1, name2, name3);
+		assertTrue(copy == this.builder);
+		assertEquals(3, ((HeaderValidationContext)ReflectionTestUtils.getField(this.builder, "headerValidationContext")).getValidators().size());
+		ReflectionTestUtils.setField(this.builder, "applicationContext", null);
+	}
+	
+	@Test
+	public void dictionary() throws Exception {
+		DataDictionary<String> dataDictionary = mock(DataDictionary.class);
+		this.builder = new ReceiveMessageBuilder();
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.dictionary(dataDictionary);
+		assertTrue(copy == this.builder);
+		assertEquals(dataDictionary, this.builder.getAction().getDataDictionary());
+	}
+
+	@Test
+	public void dictionary_byName() throws Exception {
+		String name = "dictionary";
+		DataDictionary<String> dataDictionary = mock(DataDictionary.class);
+		ApplicationContext mockApplicationContext = mock(ApplicationContext.class);
+		this.builder = new ReceiveMessageBuilder();
+		when(mockApplicationContext.getBean(name, DataDictionary.class)).thenReturn(dataDictionary);
+		ReflectionTestUtils.setField(this.builder, "applicationContext", mockApplicationContext);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.dictionary(name);
+		assertTrue(copy == this.builder);
+		assertEquals(dataDictionary, this.builder.getAction().getDataDictionary());
+		ReflectionTestUtils.setField(this.builder, "applicationContext", null);
+	}
+	
+	@Test
+	public void extractFromHeader() throws Exception {
+		String name = "foo";
+		String variable = "bar";
+		this.builder = new ReceiveMessageBuilder();
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.extractFromHeader(name, variable);
+		assertTrue(copy == this.builder);
+		assertNotNull(this.builder.getAction().getVariableExtractors());
+		assertEquals(1, this.builder.getAction().getVariableExtractors().size());
+		assertEquals("bar", ((MessageHeaderVariableExtractor)ReflectionTestUtils.getField(this.builder, "headerExtractor")).getHeaderMappings().get("foo"));
+	}
+
+	@Test
+	public void extractFromPayload_xpath() throws Exception {
+		String path = "//ResultCode";
+		String controlValue = "Success";
+		MessageType messageType = MessageType.XML;
+		this.builder = new ReceiveMessageBuilder();
+		this.builder.messageType(messageType);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.extractFromPayload(path, controlValue);
+		assertTrue(copy == this.builder);
+		assertNotNull(this.builder.getAction().getVariableExtractors());
+		assertEquals(1, this.builder.getAction().getVariableExtractors().size());
+		assertEquals("Success", ((XpathPayloadVariableExtractor)ReflectionTestUtils.getField(this.builder, "xpathExtractor")).getXpathExpressions().get("//ResultCode"));
+	}
+
+	@Test
+	public void extractFromPayload_json() throws Exception {
+		String path = "$ResultCode";
+		String controlValue = "Success";
+		MessageType messageType = MessageType.JSON;
+		this.builder = new ReceiveMessageBuilder();
+		this.builder.messageType(messageType);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.extractFromPayload(path, controlValue);
+		assertTrue(copy == this.builder);
+		assertNotNull(this.builder.getAction().getVariableExtractors());
+		assertEquals(1, this.builder.getAction().getVariableExtractors().size());
+		assertEquals("Success", ((JsonPathVariableExtractor)ReflectionTestUtils.getField(this.builder, "jsonPathExtractor")).getJsonPathExpressions().get("$ResultCode"));
+	}
+	
+	@Test
+	public void validationCallback() throws Exception {
+		ApplicationContext mockApplicationContext = mock(ApplicationContext.class);
+		ValidationCallback callback = mock(ValidationCallback.class);
+		this.builder = new ReceiveMessageBuilder();
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.validationCallback(callback);
+		assertTrue(copy == this.builder);
+		ReflectionTestUtils.setField(this.builder, "applicationContext", null);
+		assertEquals(callback, this.builder.getAction().getValidationCallback());
+	}
+	
+	@Test
+	public void withApplicationContext() throws Exception {
+		ApplicationContext mockApplicationContext = mock(ApplicationContext.class);
+		this.builder = new ReceiveMessageBuilder();
+		ReflectionTestUtils.setField(this.builder, "applicationContext", mockApplicationContext);
+		ReceiveMessageBuilder copy = (ReceiveMessageBuilder)this.builder.withApplicationContext(mockApplicationContext);
+		assertTrue(copy == this.builder);
+		assertEquals(mockApplicationContext, ReflectionTestUtils.getField(this.builder, "applicationContext"));
+		ReflectionTestUtils.setField(this.builder, "applicationContext", null);
 	}
 
 }
