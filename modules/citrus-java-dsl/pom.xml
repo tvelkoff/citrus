@@ -5,145 +5,156 @@
   <parent>
     <artifactId>citrus</artifactId>
     <groupId>com.consol.citrus</groupId>
-    <version>2.7.7-SNAPSHOT</version>
+    <version>2.8.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   
-  <!--groupId>com.consol.citrus</groupId-->
+  <groupId>com.consol.citrus</groupId>
   <artifactId>citrus-java-dsl</artifactId>
   <name>citrus-java-dsl</name>
   
   <dependencies>
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-core -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-core</artifactId>
-    <version>2.7.7</version>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-jms -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-jms</artifactId>
-    <version>2.7.7</version>
-    <scope>test</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-jms</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-ws -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-ws</artifactId>
-    <version>2.7.7</version>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-kafka</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-http -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-http</artifactId>
-    <version>2.7.7</version>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-ws</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-docker -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-docker</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-http</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-kubernetes -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-kubernetes</artifactId>
-    <version>2.7.7</version>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-docker</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-kubernetes</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
     
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-selenium -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-selenium</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-selenium</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-camel -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-camel</artifactId>
-    <version>2.7.7</version>
-    <scope>test</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-camel</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-jmx -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-jmx</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-jmx</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-rmi -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-rmi</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-rmi</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-mail -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-mail</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-mail</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-ftp -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-ftp</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-ftp</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-ssh -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-ssh</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-ssh</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-vertx -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-vertx</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-vertx</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-websocket -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-websocket</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-websocket</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-zookeeper -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-zookeeper</artifactId>
-    <version>2.7.7</version>
-    <scope>provided</scope>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-zookeeper</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.consol.citrus/citrus-jdbc -->
-<dependency>
-    <groupId>com.consol.citrus</groupId>
-    <artifactId>citrus-jdbc</artifactId>
-    <version>2.7.7</version>
-</dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-jdbc</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
@@ -165,30 +176,8 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-				<version>5.2.0</version>
       <optional>true</optional>
     </dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
-				<version>5.2.0</version>
-			</dependency>
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.2.0</version>
-			<scope>test</scope>
-		</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>2.23.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>2.23.4</version>
-			</dependency>
     
     <dependency>
       <groupId>org.testng</groupId>
