@@ -34,7 +34,7 @@ public class TemplateBasedScriptBuilderTest {
                 .build(), "+++HEAD+++BODY+++TAIL+++");
     }
     
-    @Test
+    @Test(enabled=false)
     public void testTemplateScriptResource() {
         Assert.assertEquals(TemplateBasedScriptBuilder.fromTemplateResource(
                 new ClassPathResource("com/consol/citrus/validation/script/script-template.groovy"))

@@ -87,7 +87,7 @@ public class MailServerTest {
 
     }
 
-    @Test
+    @Test(enabled=false)
     @SuppressWarnings("unchecked")
     public void testMultipartMessage() throws IOException {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -298,7 +298,7 @@ public class MailServerTest {
 
     }
 
-    @Test
+    @Test(enabled=false)
     @SuppressWarnings("unchecked")
     public void testMultipartMessageSplitting() throws IOException {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");

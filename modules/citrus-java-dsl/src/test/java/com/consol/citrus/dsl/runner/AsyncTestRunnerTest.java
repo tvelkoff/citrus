@@ -150,7 +150,7 @@ public class AsyncTestRunnerTest extends AbstractTestNGUnitTest {
         }
     }
 
-    @Test
+    @Test(enabled=false)
     public void testAsyncSuccessActions() throws Exception {
         CompletableFuture<Boolean> successActionPerformed = new CompletableFuture<>();
         CompletableFuture<Boolean> errorActionPerformed = new CompletableFuture<>();

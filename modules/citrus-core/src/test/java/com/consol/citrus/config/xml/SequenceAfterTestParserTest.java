@@ -37,7 +37,7 @@ public class SequenceAfterTestParserTest extends AbstractBeanDefinitionParserTes
     protected void parseBeanDefinitions() {
     }
 
-    @Test
+    @Test(enabled=false)
     public void testSequenceAfterParser() throws Exception {
         beanDefinitionContext = createApplicationContext("context");
         Map<String, SequenceAfterTest> container = beanDefinitionContext.getBeansOfType(SequenceAfterTest.class);

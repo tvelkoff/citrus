@@ -96,7 +96,7 @@ public class SshServerTest {
         }
     }
 
-    @Test
+    @Test(enabled=false)
     public void wrongHostKey() {
         prepareServer(true);
         server.setHostKeyPath("file:/never/existing/directory");

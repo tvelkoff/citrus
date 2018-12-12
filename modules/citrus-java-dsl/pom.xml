@@ -178,6 +178,16 @@
       <artifactId>junit-jupiter-api</artifactId>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>1.3.1</version>
+    </dependency>
     
     <dependency>
       <groupId>org.testng</groupId>
@@ -192,5 +202,11 @@
       <artifactId>xstream</artifactId>
       <scope>test</scope>
     </dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>2.21.0</version>
+				<scope>test</scope>
+			</dependency>
   </dependencies>
 </project>
