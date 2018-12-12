@@ -12,11 +12,8 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -47,7 +44,6 @@ import com.consol.citrus.validation.xml.XmlMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathPayloadVariableExtractor;
 import com.consol.citrus.variable.MessageHeaderVariableExtractor;
-import com.consol.citrus.variable.VariableExtractor;
 import com.consol.citrus.variable.dictionary.DataDictionary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -550,6 +546,10 @@ public class ReceiveMessageBuilderTest {
 		assertEquals("Success", ((XpathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "xmlMessageValidationContext")).getXpathExpressions().get("//ResultCode"));
 	}
 
+	/**
+	 * New capability
+	 * @throws Exception
+	 */
 	@Test
 	public void validate_xmlMap() throws Exception {
 		Map<String, Object> map = new HashMap<>();
@@ -572,6 +572,10 @@ public class ReceiveMessageBuilderTest {
 		assertEquals("Goodbye", ((XpathMessageValidationContext)ReflectionTestUtils.getField(this.builder, "xmlMessageValidationContext")).getXpathExpressions().get("//Hello"));
 	}
 
+	/**
+	 * New capability
+	 * @throws Exception
+	 */
 	@Test
 	public void validate_jsonMap() throws Exception {
 		Map<String, Object> map = new HashMap<>();
