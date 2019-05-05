@@ -17,6 +17,7 @@
 package com.consol.citrus.validation.xml;
 
 import com.consol.citrus.context.TestContext;
+import com.consol.citrus.context.XpathAssertionResult;
 import com.consol.citrus.exceptions.UnknownElementException;
 import com.consol.citrus.exceptions.ValidationException;
 import com.consol.citrus.message.Message;
@@ -109,7 +110,13 @@ public class XpathMessageValidator extends AbstractMessageValidator<XpathMessage
             }
 
             //do the validation of actual and expected value for element
-            ValidationUtils.validateValues(xPathResult, expectedValue, xPathExpression, context);
+            try {
+              ValidationUtils.validateValues(xPathResult, expectedValue, xPathExpression, context);
+            }
+            catch (ValidationException e) {
+            	// When XPath expressions evaluate to false, treat them as failures, not exceptions.
+            	context.addFailure(new XpathAssertionResult(xPathExpression, (String)expectedValue, (String)xPathResult));
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("Validating element: " + xPathExpression + "='" + expectedValue + "': OK.");
