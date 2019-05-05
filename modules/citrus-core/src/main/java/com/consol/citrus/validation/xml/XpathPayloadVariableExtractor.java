@@ -78,10 +78,16 @@ public class XpathPayloadVariableExtractor implements VariableExtractor {
                 XPathExpressionResult resultType = XPathExpressionResult.fromString(pathExpression, XPathExpressionResult.STRING);
                 pathExpression = XPathExpressionResult.cutOffPrefix(pathExpression);
                 
-                Object value = XPathUtils.evaluate(doc, pathExpression, nsContext, resultType);
-
-                if (value == null) {
-                    throw new CitrusRuntimeException("Not able to find value for expression: " + pathExpression);
+                // Set value to empty string, not null. Citrus variables cannot have value of null.
+                Object value = "";
+                // Ignore CitrusRuntimeException if it indicates the XPath expression has no result.
+                try {
+                  value = XPathUtils.evaluate(doc, pathExpression, nsContext, resultType);
+                }
+                catch (CitrusRuntimeException e) {
+                	if (!e.getMessage().startsWith("No result for XPath expression")) {
+                		throw e; // Do permit other exceptions to be thrown.
+                	}
                 }
 
                 if (value instanceof List) {
