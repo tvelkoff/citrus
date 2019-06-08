@@ -51,9 +51,28 @@ public class XpathMessageValidator extends AbstractMessageValidator<XpathMessage
     @Autowired(required = false)
     private NamespaceContextBuilder namespaceContextBuilder = new NamespaceContextBuilder();
 
+    /** 
+     * Determines desired behavior when XPath evaluation yields failure on match between expected and actual result.
+     * When isLenient is false, validateMessages will return true unless there is a match failure,
+     * in which case a ValidationException will be thrown.
+     * When isLenient is true, validateMessage will return false on a match failure and true otherwise.
+     * Default: false
+     **/
+    private boolean isLenient;
+    
+    public XpathMessageValidator() {
+    	this(false);
+    }
+    
+    public XpathMessageValidator(boolean isLenient) {
+    	this.isLenient = isLenient;
+    }
+
     @Override
     public void validateMessage(Message receivedMessage, Message controlMessage, TestContext context, XpathMessageValidationContext validationContext) throws ValidationException {
-        if (CollectionUtils.isEmpty(validationContext.getXpathExpressions())) { return; }
+        if (CollectionUtils.isEmpty(validationContext.getXpathExpressions())) {
+        	return;
+        }
 
         if (receivedMessage.getPayload() == null || !StringUtils.hasText(receivedMessage.getPayload(String.class))) {
             throw new ValidationException("Unable to validate message elements - receive message payload was empty");
@@ -93,33 +112,40 @@ public class XpathMessageValidator extends AbstractMessageValidator<XpathMessage
                 Node node = XMLUtils.findNodeByName(received, xPathExpression);
 
                 if (node == null) {
-                    throw new UnknownElementException(
-                            "Element ' " + xPathExpression + "' could not be found in DOM tree");
+                	if (isLenient()) {
+                		xPathResult = "";
+                	}
+                	else {
+                        throw new UnknownElementException("Element ' " + xPathExpression + " could not be found in DOM tree");
+                	}
                 }
-
-                if (XmlValidationUtils.isElementIgnored(node, validationContext.getIgnoreExpressions(), namespaceContext)) {
+                else if (XmlValidationUtils.isElementIgnored(node, validationContext.getIgnoreExpressions(), namespaceContext)) {
                     continue;
                 }
+                else {
+                    xPathResult = getNodeValue(node);
+                }
 
-                xPathResult = getNodeValue(node);
-            }
+           }
 
             if (expectedValue instanceof String) {
                 //check if expected value is variable or function (and resolve it, if yes)
                 expectedValue = context.replaceDynamicContentInString(String.valueOf(expectedValue));
             }
 
-            //do the validation of actual and expected value for element
             try {
-              ValidationUtils.validateValues(xPathResult, expectedValue, xPathExpression, context);
+                ValidationUtils.validateValues(xPathResult, expectedValue, xPathExpression, context);
+                if (log.isDebugEnabled()) {
+                    log.debug("Validating element: " + xPathExpression + "='" + expectedValue + "': OK.");
+                }
             }
-            catch (ValidationException e) {
-            	// When XPath expressions evaluate to false, treat them as failures, not exceptions.
-            	context.addFailure(new XpathAssertionResult(xPathExpression, (String)expectedValue, (String)xPathResult));
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("Validating element: " + xPathExpression + "='" + expectedValue + "': OK.");
+            catch (ValidationException ex) {
+            	if (isLenient()) {
+            		context.addFailure(new XpathAssertionResult(xPathExpression, (String)expectedValue, (String)xPathResult));
+            	}
+            	else {
+            		throw ex;
+            	}
             }
         }
 
@@ -134,6 +160,10 @@ public class XpathMessageValidator extends AbstractMessageValidator<XpathMessage
     @Override
     public boolean supportsMessageType(String messageType, Message message) {
         return new DomXmlMessageValidator().supportsMessageType(messageType, message);
+    }
+    
+    public boolean isLenient() {
+        return isLenient;
     }
 
     /**
