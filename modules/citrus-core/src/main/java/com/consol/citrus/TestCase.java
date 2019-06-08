@@ -275,14 +275,7 @@ public class TestCase extends AbstractActionContainer implements BeanNameAware {
             if (contextException != null) {
                 throw new TestCaseFailedException(contextException);
             }
-
-            // If testResult is success and there are failures,
-            // then get the first failure and use it to create a testResult of failed.
-            if (testResult.isSuccess() && context.hasFailures()) {
-            	contextFailure = context.getFailures().get(0);
-            	testResult = TestResult.failed(getName(), testClass.getName(), contextFailure.toString());
-            }
-
+            testResult = evaluateTestResult(testResult, context);
         } catch (final TestCaseFailedException e) {
             throw e;
         } catch (final Exception | AssertionError e) {
@@ -355,7 +348,7 @@ public class TestCase extends AbstractActionContainer implements BeanNameAware {
     public void addFinalAction(final TestAction testAction) {
         this.finalActions.add(testAction);
     }
-    
+
     /**
      * Get the test case meta information.
      * @return the metaInfo
@@ -530,4 +523,24 @@ public class TestCase extends AbstractActionContainer implements BeanNameAware {
     public long getTimeout() {
         return timeout;
     }
+
+    /**
+     * Evaluate the test result.
+     * @param result TestResult to be evaluated
+     * @param context TestContext in which TestCase is executing
+     * @return The input TestResult if there are no failures.
+     * Otherwise, retrieve the first XpathAssertionResult in the list of failures,
+     * and use it along with the names of the Test Action and Test Class
+     * to construct and return a TestResult of failed.
+     */
+    protected TestResult evaluateTestResult(TestResult result, TestContext context) {
+        if (result.isSuccess() && context.hasFailures()) {
+            XpathAssertionResult contextFailure = context.getFailures().remove(0);
+            return TestResult.failed(getName(), testClass.getName(), contextFailure.toString());
+        }
+        else {
+            return result;
+        }
+    }
+
 }
