@@ -41,6 +41,7 @@ import com.consol.citrus.validation.xml.XmlMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathPayloadVariableExtractor;
 import com.consol.citrus.variable.MessageHeaderVariableExtractor;
+import com.consol.citrus.variable.VariableExtractor;
 import com.consol.citrus.variable.dictionary.DataDictionary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -715,6 +716,27 @@ public class ReceiveMessageBuilder<A extends ReceiveMessageAction, T extends Rec
     public T selector(final Map<String, Object> messageSelector) {
         getAction().setMessageSelectorMap(messageSelector);
 
+        return self;
+    }
+    
+    /**
+     * Sets explicit variable extractors for this receive action.
+     * @param extractors
+     * @return
+     */
+    public T extractor(VariableExtractor ... extractors) {
+        Stream.of(extractors).forEach(extractor -> {
+        	getAction().getVariableExtractors().add(extractor);
+        	if (extractor instanceof MessageHeaderVariableExtractor) {
+        		this.headerExtractor = (MessageHeaderVariableExtractor)extractor;
+        	}
+        	else if (extractor instanceof XpathPayloadVariableExtractor) {
+        		this.xpathExtractor = (XpathPayloadVariableExtractor)extractor;
+        	}
+        	else if (extractor instanceof JsonPathVariableExtractor) {
+        		this.jsonPathExtractor = (JsonPathVariableExtractor)extractor;
+        	}
+        });
         return self;
     }
     

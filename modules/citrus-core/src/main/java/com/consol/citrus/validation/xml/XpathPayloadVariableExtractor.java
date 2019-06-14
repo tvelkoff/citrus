@@ -45,13 +45,37 @@ public class XpathPayloadVariableExtractor implements VariableExtractor {
 
     /** Map defines xpath expressions and target variable names */
     private Map<String, String> xPathExpressions = new HashMap<String, String>();
-    
+
     /** Namespace definitions used in xpath expressions */
     private Map<String, String> namespaces = new HashMap<String, String>();
-    
+
     /** Logger */
     private static Logger log = LoggerFactory.getLogger(XpathPayloadVariableExtractor.class);
-    
+
+    /** 
+     * Determines desired behavior when XPath evaluation yields empty result.
+     * When false, a CitrusRuntimeException will be thrown for slash-separated expressions,
+     * and an UnknownElementException will be thrown for dot-separated expressions.
+     * When true, the Citrus variable will be assigned the value of an empty string.
+     * Default: false
+     **/
+    private boolean isLenient;
+
+    /**
+     * Will throw exceptions when elements not found.
+     */
+    public XpathPayloadVariableExtractor() {
+        this(false);
+    }
+
+    /**
+     * Configures desired behavior when elements not found.
+     * @param isLenient Should VariableExtractor suppress exceptions when elements not found?
+     */
+    public XpathPayloadVariableExtractor(boolean isLenient) {
+        this.isLenient = isLenient;
+    }
+
     /**
      * Extract variables using Xpath expressions.
      */
@@ -61,8 +85,9 @@ public class XpathPayloadVariableExtractor implements VariableExtractor {
         if (log.isDebugEnabled()) {
             log.debug("Reading XML elements with XPath");
         }
-        
+
         NamespaceContext nsContext = context.getNamespaceContextBuilder().buildContext(message, namespaces);
+        Document doc = XMLUtils.parseMessagePayload(message.getPayload(String.class));
 
         for (Entry<String, String> entry : xPathExpressions.entrySet()) {
             String pathExpression = context.replaceDynamicContentInString(entry.getKey());
@@ -71,40 +96,11 @@ public class XpathPayloadVariableExtractor implements VariableExtractor {
             if (log.isDebugEnabled()) {
                 log.debug("Evaluating XPath expression: " + pathExpression);
             }
-            
-            Document doc = XMLUtils.parseMessagePayload(message.getPayload(String.class));
-            
+
             if (XPathUtils.isXPathExpression(pathExpression)) {
-                XPathExpressionResult resultType = XPathExpressionResult.fromString(pathExpression, XPathExpressionResult.STRING);
-                pathExpression = XPathExpressionResult.cutOffPrefix(pathExpression);
-                
-                Object value = XPathUtils.evaluate(doc, pathExpression, nsContext, resultType);
-
-                if (value == null) {
-                    throw new CitrusRuntimeException("Not able to find value for expression: " + pathExpression);
-                }
-
-                if (value instanceof List) {
-                    value = StringUtils.arrayToCommaDelimitedString(((List)value).toArray(new String[((List)value).size()]));
-                }
-                
-                context.setVariable(variableName, value);
+                evaluateSlashSeparatedExpression(pathExpression, variableName, doc, context, nsContext);
             } else {
-                Node node = XMLUtils.findNodeByName(doc, pathExpression);
-
-                if (node == null) {
-                    throw new UnknownElementException("No element found for expression" + pathExpression);
-                }
-
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    if (node.getFirstChild() != null) {
-                        context.setVariable(xPathExpressions.get(pathExpression), node.getFirstChild().getNodeValue());
-                    } else {
-                        context.setVariable(xPathExpressions.get(pathExpression), "");
-                    }
-                } else {
-                    context.setVariable(xPathExpressions.get(pathExpression), node.getNodeValue());
-                }
+                evaluateDotSeparatedExpression(pathExpression, variableName, doc, context);
             }
         }
     }
@@ -116,7 +112,7 @@ public class XpathPayloadVariableExtractor implements VariableExtractor {
     public void setXpathExpressions(Map<String, String> xPathExpressions) {
         this.xPathExpressions = xPathExpressions;
     }
-    
+
     /**
      * List of expected namespaces.
      * @param namespaces the namespaces to set
@@ -140,4 +136,78 @@ public class XpathPayloadVariableExtractor implements VariableExtractor {
     public Map<String, String> getNamespaces() {
         return namespaces;
     }
+
+    public boolean isLenient() {
+        return isLenient;
+    }
+
+    /**
+     * Evaluate slash-separated XPath expression.
+     * When the XPath evaluation yields a single result, that value is assigned to the named variable in the test context.
+     * When the XPath evaluation yields a list of results, the list is converted to a comma-separated string and assigned to the named variable in the test context.
+     * When the XPath evaluation yields no result, the behavior is governed by the isLenient flag.
+     * If the flag is false (the default), a CitrusRuntimeException will be thrown.
+     * If the flag is true, an empty string is assigned as the value of the named variable in the test context.
+     * @param pathExpression XPath expression to be evaluated
+     * @param variableName Name of variable in the test context
+     * @param doc Document against which the XPath expression to be evaluated
+     * @param context Test context that contains the variable whose value will be assigned
+     * @param nsContext Namespace context in which the XPath expression will be evaluated
+     */
+    protected void evaluateSlashSeparatedExpression(String pathExpression, String variableName, Document doc, TestContext context, NamespaceContext nsContext) {
+        XPathExpressionResult resultType = XPathExpressionResult.fromString(pathExpression, XPathExpressionResult.STRING);
+        String expr = XPathExpressionResult.cutOffPrefix(pathExpression);
+
+        try {
+            Object value = XPathUtils.evaluate(doc, expr, nsContext, resultType);
+            if (value instanceof List) {
+                value = StringUtils.arrayToCommaDelimitedString(((List<String>)value).toArray(new String[((List)value).size()]));
+            }
+            context.setVariable(variableName, value);
+        }
+        catch (CitrusRuntimeException ex) {
+            if (isLenient) {
+                context.setVariable(variableName, "");
+            }
+            else {
+                throw ex;
+            }
+        }
+    }
+
+    /**
+     * Evaluate dot-separated XPath expression.
+     * When the XPath expression yields an element node, the value of the first child is assigned to the named variable in the test context.
+     * When the XPath expression yields an element node that has no first child, the empty string is assigned to the named variable in the test context.
+     * When the XPath expression yields a non-element node, the value of the node is assigned to the named variable in the test context.
+     * When the XPath evaluation yields no result, the behavior is governed by the isLenient flag.
+     * If the flag is false (the default), an UnknownElementException will be thrown.
+     * If the flag is true, an empty string is assigned as the value of the named variable in the test context.
+     * @param pathExpression XPath expression to be evaluated
+     * @param variableName Name of variable in the test context
+     * @param doc Document against which the XPath expression to be evaluated
+     * @param context Test context that contains the variable whose value will be assigned
+     */
+    protected void evaluateDotSeparatedExpression(String pathExpression, String variableName, Document doc, TestContext context) {
+        Node node = XMLUtils.findNodeByName(doc, pathExpression);
+
+        if (node == null) {
+            if (isLenient) {
+                context.setVariable(xPathExpressions.get(pathExpression), "");
+            }
+            else {
+                throw new UnknownElementException("No element found for expression" + pathExpression);
+            }
+        }
+        else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            if (node.getFirstChild() != null) {
+                context.setVariable(xPathExpressions.get(pathExpression), node.getFirstChild().getNodeValue());
+            } else {
+                context.setVariable(xPathExpressions.get(pathExpression), "");
+            }
+        } else {
+            context.setVariable(xPathExpressions.get(pathExpression), node.getNodeValue());
+        }
+    }
+
 }

@@ -136,6 +136,11 @@ public class TestContext {
     private List<CitrusRuntimeException> exceptions = new ArrayList<>();
 
     /**
+     * List of XPath assertion failures that actions found during execution of forked operations
+     */
+    private List<XpathAssertionResult> failures = new ArrayList<>();
+
+    /**
      * Default constructor
      */
     public TestContext() {
@@ -792,13 +797,41 @@ public class TestContext {
     }
 
     /**
+     * Add new failure to the context marking the test as failed. This
+     * is usually used by actions to mark XPath assertion failures during forked operations.
+     *
+     * @param failure
+     */
+    public void addFailure(XpathAssertionResult failure) {
+        this.failures.add(failure);
+    }
+
+    /**
+     * Gets the value of the failure property.
+     *
+     * @return the failures
+     */
+    public List<XpathAssertionResult> getFailures() {
+        return failures;
+    }
+
+    /**
+     * Gets failure collection state.
+     *
+     * @return
+     */
+    public boolean hasFailures() {
+        return !CollectionUtils.isEmpty(getFailures());
+    }
+
+    /**
      * Checks test result success in combination with this context exception state.
      *
      * @param testResult
      * @return
      */
     public boolean isSuccess(TestResult testResult) {
-        return !hasExceptions() &&
+        return !hasExceptions() && !hasFailures() &&
                 Optional.ofNullable(testResult)
                         .map(TestResult::isSuccess)
                         .orElse(false);

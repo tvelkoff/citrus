@@ -18,6 +18,7 @@ package com.consol.citrus;
 
 import com.consol.citrus.container.*;
 import com.consol.citrus.context.TestContext;
+import com.consol.citrus.context.XpathAssertionResult;
 import com.consol.citrus.exceptions.CitrusRuntimeException;
 import com.consol.citrus.exceptions.TestCaseFailedException;
 import com.consol.citrus.report.TestActionListeners;
@@ -273,6 +274,10 @@ public class TestCase extends AbstractActionContainer implements BeanNameAware {
             if (contextException != null) {
                 throw new TestCaseFailedException(contextException);
             }
+            if (testResult.isSuccess() && context.hasFailures()) {
+                XpathAssertionResult contextFailure = context.getFailures().remove(0);
+                testResult = TestResult.failed(getName(), testClass.getName(), contextFailure.toString());
+            }
         } catch (final TestCaseFailedException e) {
             throw e;
         } catch (final Exception | AssertionError e) {
@@ -520,4 +525,5 @@ public class TestCase extends AbstractActionContainer implements BeanNameAware {
     public long getTimeout() {
         return timeout;
     }
+
 }

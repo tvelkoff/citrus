@@ -39,6 +39,7 @@ import com.consol.citrus.validation.xml.XmlMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathMessageValidationContext;
 import com.consol.citrus.validation.xml.XpathPayloadVariableExtractor;
 import com.consol.citrus.variable.MessageHeaderVariableExtractor;
+import com.consol.citrus.variable.VariableExtractor;
 import com.consol.citrus.variable.dictionary.DataDictionary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1173,6 +1174,25 @@ class ReceiveMessageBuilderTest {
 		//THEN
 		assertSame(copy, this.builder);
 		assertEquals(selectors, this.builder.getAction().getMessageSelectorMap());
+	}
+	
+	@Test
+	void extractor() {
+
+		//GIVEN
+		final MessageHeaderVariableExtractor extractor1 = mock(MessageHeaderVariableExtractor.class);
+		final XpathPayloadVariableExtractor extractor2 = mock(XpathPayloadVariableExtractor.class);
+		final JsonPathVariableExtractor extractor3 = mock(JsonPathVariableExtractor.class);
+
+		//WHEN
+		final ReceiveMessageBuilder copy = this.builder.extractor(extractor1, extractor2, extractor3);
+
+		//THEN
+		assertSame(copy, this.builder);
+		assertEquals(3, this.builder.getAction().getVariableExtractors().size());
+		assertEquals(extractor1, ReflectionTestUtils.getField(copy, ReceiveMessageBuilder.class, "headerExtractor"));
+		assertEquals(extractor2, ReflectionTestUtils.getField(copy, ReceiveMessageBuilder.class, "xpathExtractor"));
+		assertEquals(extractor3, ReflectionTestUtils.getField(copy, ReceiveMessageBuilder.class, "jsonPathExtractor"));
 	}
 	
 	@Test
